@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Game, DAY_LENGTH } from '../public/game.js';
+import { Game, DAY_LENGTH } from '../lib/game.js';
 const target = (type = 'villager', hp = 1, gold = 15, x = 60) => ({ type, hp, gold, x, hit: 0, resolved: false });
 function setup() { const game = new Game(() => .1); game.startDay(); game.entities = []; return game; }
 

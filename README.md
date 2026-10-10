@@ -2,7 +2,7 @@
 
 Ett eget sidscrollande arkadspel inspirerat av The Black Knight. En svart riddare
 samlar kungens skatt i en medeltida by. All grafik är egen vektorgrafik ritad på
-Canvas, utan externa bilder, bibliotek eller tjänster.
+Canvas. Webbappen använder Next.js App Router och React.
 
 ## Spela
 
@@ -20,21 +20,41 @@ Canvas, utan externa bilder, bibliotek eller tjänster.
 
 ## Utveckling
 
-Kräver Node.js 22+ och Python 3. Ingen paketinstallation eller byggprocess behövs.
+Kräver Node.js 22+. Python behövs inte längre.
 
 ```sh
 cd /workspace/bashing-game
+npm ci
+npm run dev
+```
+
+Utvecklingsservern använder port 3000. Stoppa den med Ctrl+C.
+
+```sh
 npm test
+npm run build
 npm start
 ```
 
-Utvecklingsservern använder port 8000 och serverar endast `public/`.
-Stoppa den med Ctrl+C. Filerna i `public/` kan publiceras på en statisk webbserver.
+`npm start` kör produktionsservern efter ett lyckat bygge. Porten kan ändras med
+`npm run dev -- --port 8000` eller `npm start -- --port 8000`.
 
-`public/game.js` innehåller spellogiken, `public/app.js` gränssnitt och rendering.
-`test/game.test.js` verifierar stridsräckvidd, cooldown, kraftslag, skadehantering,
-skattemål, ekonomi, utrustning, paus och en hel speldag.
+- `app/` innehåller Next.js-layout, startsida, metadata och global CSS.
+- `components/KnightGame.js` är en React-klientkomponent för gränssnitt,
+  inmatning och spellivscykel. Animation och ljud startas i en effekt och
+  städas bort när komponenten avmonteras.
+- `lib/game.js` innehåller den oberoende spellogiken.
+- `lib/renderer.js` ritar den egna Canvas-grafiken.
+- `test/game.test.js` verifierar stridsräckvidd, cooldown, kraftslag,
+  skadehantering, skattemål, ekonomi, utrustning, paus och en hel speldag.
 
 Webbläsarkontroll: starta, slå med mus och tangentbord, pausa, slutför en dag,
 handla, fortsätt och starta om efter förlust. Kontrollera även mobil layout.
 Ingen autentisering, databas eller hemlig miljövariabel krävs.
+
+## Publicering
+
+Projektet kan importeras från GitHub i Vercel med Next.js som ramverk och
+standardkommandot `npm run build`. Det går också att köra på en Node.js-värd
+med `npm ci`, `npm run build` och `npm start`. En offentlig webbplats skapas
+först när projektet driftsätts på en sådan värd.
