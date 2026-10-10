@@ -7,6 +7,24 @@ animerade sprites. Webbappen använder Next.js App Router och React.
 
 Se [ASSET_CREDITS.md](ASSET_CREDITS.md) för paket, källor och licens.
 
+## Skärmbilder
+
+Startmenyn i den medeltida byn.
+
+![Startmenyn med den svarta riddaren och den tecknade byn](docs/screenshots/main-menu.png)
+
+Riddaren använder sin köpta yxa under nästa dags skattejakt.
+
+![Spel med utrustad yxa, myntbelöning och kraftslag](docs/screenshots/gameplay.png)
+
+Smedens butik visar sex vapen med sprites, priser, skada och räckvidd.
+
+![Vapenbutiken med myntpung, utrustat startvapen och tydliga priser](docs/screenshots/weapon-shop.png)
+
+Spelet anpassar sig även till stående mobilskärmar.
+
+<img src="docs/screenshots/mobile-gameplay.png" alt="Mobilvy med riddaren, utrustad yxa och SLÅ-knappen" width="280" />
+
 ## Spela
 
 - Riddaren går automatiskt. Klicka i spelområdet, tryck mellanslag eller använd
