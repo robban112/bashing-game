@@ -1,8 +1,11 @@
 # Svarta riddaren — Bashing Game
 
 Ett eget sidscrollande arkadspel inspirerat av The Black Knight. En svart riddare
-samlar kungens skatt i en medeltida by. All grafik är egen vektorgrafik ritad på
-Canvas. Webbappen använder Next.js App Router och React.
+samlar kungens skatt i en medeltida by. Spelet fyller hela webbläsarfönstret,
+utan ram eller sidmarginaler. GameArt2D:s CC0-paket av pzUH ger spelet tecknade,
+animerade sprites. Webbappen använder Next.js App Router och React.
+
+Se [ASSET_CREDITS.md](ASSET_CREDITS.md) för paket, källor och licens.
 
 ## Spela
 
@@ -16,6 +19,8 @@ Canvas. Webbappen använder Next.js App Router och React.
 - Köp vapen, rustning eller läkande drycker mellan dagarna. Hälsa och
   utrustning följer med; skattemålet ökar varje dag.
 - P eller Pausa stoppar spelet. Det pausas även när fönstret tappar fokus.
+- Helskärm-knappen döljer webbläsarens gränssnitt där Fullscreen API stöds.
+  Spelet fyller fönstret även utan det läget.
 - Ljud är valfritt och avstängt från början. Rekord sparas lokalt i webbläsaren.
 
 ## Utveckling
@@ -44,12 +49,16 @@ npm start
   inmatning och spellivscykel. Animation och ljud startas i en effekt och
   städas bort när komponenten avmonteras.
 - `lib/game.js` innehåller den oberoende spellogiken.
-- `lib/renderer.js` ritar den egna Canvas-grafiken.
+- `lib/renderer.js` ritar sprites, egna miljöer och komiska träffeffekter på Canvas.
+- `lib/assets.js` laddar lokala spritefiler före spelstart.
+- `public/assets/gameart2d/` innehåller originalbilder, källlicens och filmanifest.
 - `test/game.test.js` verifierar stridsräckvidd, cooldown, kraftslag,
   skadehantering, skattemål, ekonomi, utrustning, paus och en hel speldag.
 
 Webbläsarkontroll: starta, slå med mus och tangentbord, pausa, slutför en dag,
-handla, fortsätt och starta om efter förlust. Kontrollera även mobil layout.
+handla, fortsätt och starta om efter förlust. Kontrollera även mobil layout, landskapsläge och Helskärm-knappen.
+Spelet visar en laddningsknapp tills sprites är klara och ett omladdningsval
+om en bild inte kan laddas. Ingen extern bildserver behövs under spel.
 Ingen autentisering, databas eller hemlig miljövariabel krävs.
 
 ## Publicering

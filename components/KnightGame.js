@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Game, WEAPONS } from '../lib/game';
 import { createRenderer } from '../lib/renderer';
+import { loadSprites } from '../lib/assets';
 
 function snapshot(game) {
   return {
@@ -14,6 +15,7 @@ function snapshot(game) {
 
 export default function KnightGame() {
   const canvasRef = useRef(null);
+  const rootRef = useRef(null);
   const gameRef = useRef(null);
   const publishRef = useRef(() => {});
   const soundRef = useRef(false);
@@ -21,12 +23,21 @@ export default function KnightGame() {
   const [sound, setSound] = useState(false);
   const [best, setBest] = useState(0);
   const [toast, setToast] = useState('');
+  const [assetsReady, setAssetsReady] = useState(false);
+  const [assetError, setAssetError] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [fullscreenSupported, setFullscreenSupported] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const game = new Game();
     gameRef.current = game;
-    const draw = createRenderer(canvas, game);
+    const controller = new AbortController();
+    let draw;
+    setAssetsReady(false); setAssetError(false);
+    setFullscreenSupported(!!document.fullscreenEnabled);
+    const onFullscreen = () => setFullscreen(document.fullscreenElement === rootRef.current);
+    document.addEventListener('fullscreenchange', onFullscreen);
     let last = performance.now(), lastPublish = 0, frameId, audio, toastUntil = 0, record = 0;
     try { record = Math.max(0, Number(localStorage.getItem('knight-best')) || 0); } catch {}
     setBest(record);
@@ -52,8 +63,11 @@ export default function KnightGame() {
       } catch { /* Audio is optional. */ }
     }
     function resize() {
-      const width = Math.max(1, Math.round(canvas.clientWidth / canvas.clientHeight * 480));
+      const ratio = Math.min(2, window.devicePixelRatio || 1);
+      const width = Math.max(1, Math.round(canvas.clientWidth * ratio));
+      const height = Math.max(1, Math.round(canvas.clientHeight * ratio));
       if (canvas.width !== width) canvas.width = width;
+      if (canvas.height !== height) canvas.height = height;
     }
     const observer = new ResizeObserver(resize); observer.observe(canvas); resize();
     function pauseOnBlur() {
@@ -86,9 +100,18 @@ export default function KnightGame() {
       if (now - lastPublish >= 80) { publish(); lastPublish = now; }
       draw(now); frameId = requestAnimationFrame(frame);
     }
-    publish(); frameId = requestAnimationFrame(frame);
+    publish();
+    loadSprites(controller.signal).then(sprites => {
+      if (controller.signal.aborted) return;
+      draw = createRenderer(canvas, game, sprites);
+      last = performance.now(); setAssetsReady(true);
+      frameId = requestAnimationFrame(frame);
+    }).catch(error => {
+      if (error.name !== 'AbortError') { setAssetError(true); setAssetsReady(false); }
+    });
     return () => {
-      cancelAnimationFrame(frameId); observer.disconnect();
+      controller.abort(); cancelAnimationFrame(frameId); observer.disconnect();
+      document.removeEventListener('fullscreenchange', onFullscreen);
       window.removeEventListener('keydown', keydown); window.removeEventListener('keyup', keyup);
       window.removeEventListener('blur', pauseOnBlur); document.removeEventListener('visibilitychange', onVisibility);
       if (audio) void audio.close().catch(() => {});
@@ -101,12 +124,20 @@ export default function KnightGame() {
     callback(gameRef.current); publishRef.current();
   }
   function start() {
+    if (assetError) { window.location.reload(); return; }
+    if (!assetsReady) return;
     action(game => {
       if (game.paused) game.togglePause();
       else if (game.state === 'shop') game.nextDay();
       else { if (game.state === 'over') game.reset(); game.startDay(); }
     });
     canvasRef.current?.focus({ preventScroll: true });
+  }
+  async function toggleFullscreen() {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await rootRef.current?.requestFullscreen();
+    } catch { setToast('Helskärm stöds inte här. Spelet fyller redan fönstret.'); }
   }
   function pointerDown(event) {
     if (event.button !== 0) return;
@@ -131,7 +162,7 @@ export default function KnightGame() {
     text: 'Skatten, tiden och byborna väntar tills du fortsätter.', button: 'Fortsätt', note: 'Tryck P eller knappen för att fortsätta.',
   } : {
     kicker: 'KUNGEN VILL HA SITT GULD', title: <>En hård dags<br />skattearbete.</>,
-    text: 'Byn har gömt sina mynt. Din klubba sköter förhandlingen. Samla dagens skatt innan tiden tar slut — men lämna trollkarlarna i fred.',
+    text: 'Byn har gömt sina mynt. Du sköter förhandlingen. Samla dagens skatt innan tiden tar slut — men lämna trollkarlarna i fred.',
     button: 'Ut i byn', note: 'Klicka / mellanslag: slå · Håll och släpp: kraftslag',
   };
   const nextWeapon = WEAPONS[view.weapon + 1];
@@ -142,53 +173,52 @@ export default function KnightGame() {
   ];
 
   return (
-    <main>
-      <header className="masthead">
-        <div className="brand"><span className="sigil" aria-hidden="true">♜</span><div><p className="eyebrow">BASHING GAME / ETT MEDELTIDA ARKADSPEL</p><h1>Svarta riddaren<span>.</span></h1></div></div>
-        <div className="tools">
-          <button id="sound" aria-pressed={sound} onClick={() => { soundRef.current = !sound; setSound(!sound); }}>{sound ? 'Ljud på' : 'Ljud av'}</button>
-          <button id="pause" disabled={view.state !== 'running'} onClick={() => action(game => game.togglePause())}>{view.paused ? 'Fortsätt' : 'Pausa'}</button>
-        </div>
-      </header>
+    <main ref={rootRef} className="game-root">
       <section className="game-shell" aria-label="Svarta riddaren">
-        <div className="hud">
-          <div><span>DAG</span><strong id="day">{String(view.day).padStart(2, '0')}</strong></div>
-          <div className="tax"><span>DAGENS SKATT <b id="quota">{view.collected} / {view.goal}</b></span><div className="meter"><i id="tax-bar" style={{ width: `${Math.min(100, view.collected / view.goal * 100)}%` }} /></div></div>
-          <div className="health"><span>HÄLSA <b id="health">{view.health}</b></span><div className="meter"><i id="health-bar" style={{ width: `${view.health}%` }} /></div></div>
-          <div><span>TID KVAR</span><strong id="time">{view.time}s</strong></div>
-          <div><span>MYNTPUNG</span><strong className="gold" id="bank">{view.bank}</strong></div>
-        </div>
         <div className="viewport">
-          <canvas ref={canvasRef} id="scene" width="960" height="480" tabIndex={0} {...input} aria-label="Sidscrollande spel. Tryck mellanslag eller klicka för att slå. Håll in och släpp för kraftslag. P pausar." />
-          <div className="scene-label" aria-hidden="true"><span id="location">{['KORPBYN', 'EKDALEN', 'KUNGSVÄGEN'][(view.day - 1) % 3]}</span><span>Kungens skatt väntar inte.</span></div>
+          <canvas ref={canvasRef} id="scene" width="960" height="540" tabIndex={0} {...input} aria-label="Sidscrollande spel. Tryck mellanslag eller klicka för att slå. Håll in och släpp för kraftslag. P pausar." />
+          <div className="scene-label" aria-hidden="true"><span id="location">{['KORPBYN', 'EKDALEN', 'KUNGSVÄGEN'][(view.day - 1) % 3]}</span></div>
           <div id="overlay" className="overlay" hidden={state === 'running'}>
             <div id="panel" className="panel">
+              {state === 'ready' && <p className="game-logo">SVARTA RIDD<span>AREN</span></p>}
               <p id="panel-kicker" className="eyebrow">{panel.kicker}</p>
-              <h2 id="panel-title">{panel.title}</h2>
+              <h1 id="panel-title">{panel.title}</h1>
               <p id="panel-text">{panel.text}</p>
+              {state === 'ready' && <div className="quick-guide"><span>✦ Slå nära</span><span>◈ Samla mynt</span><span>☄ Undvik magi</span></div>}
               {state === 'shop' && <div id="shop" className="shop">{shop.map(item => (
                 <button key={item.id} disabled={!item.enabled || view.bank < item.cost} onClick={() => action(game => game.buy(item.id))}>
+                  <span className="shop-icon" aria-hidden="true">{item.id === 'weapon' ? '⚔' : item.id === 'armor' ? '♜' : '♥'}</span>
                   {item.name}<small>{item.enabled ? `${item.cost} mynt` : item.id === 'potion' ? 'Full hälsa' : 'Fullt uppgraderad'}</small>
                 </button>
               ))}</div>}
-              <button id="start" className="primary" onClick={start}>{panel.button}<span aria-hidden="true">→</span></button>
-              <p id="panel-note" className="panel-note">{panel.note}</p>
+              <button id="start" className="primary" onClick={start} disabled={!assetsReady && !assetError}>
+                {assetError ? 'Ladda om' : assetsReady ? panel.button : 'Laddar riddaren…'}<span aria-hidden="true">→</span>
+              </button>
+              <p id="panel-note" className="panel-note">{assetError ? 'Grafiken kunde inte laddas. Försök ladda om sidan.' : panel.note}</p>
+              {state === 'ready' && <p className="asset-credit">Sprites av pzUH / GameArt2D · CC0</p>}
             </div>
           </div>
           <div id="toast" className={`toast${toast ? ' visible' : ''}`} role="status" aria-live="polite">{toast}</div>
         </div>
+        <div className="hud">
+          <div className="stat day"><span>DAG</span><strong id="day">{String(view.day).padStart(2, '0')}</strong></div>
+          <div className="stat tax"><span>DAGENS SKATT <b id="quota">{view.collected} / {view.goal}</b></span><div className="meter"><i id="tax-bar" style={{ width: `${Math.min(100, view.collected / view.goal * 100)}%` }} /></div></div>
+          <div className="stat health"><span>HÄLSA <b id="health">{view.health}</b></span><div className="meter"><i id="health-bar" style={{ width: `${view.health}%` }} /></div></div>
+          <div className="stat"><span>TID</span><strong id="time">{view.time}s</strong></div>
+          <div className="stat"><span>MYNTPUNG</span><strong className="gold" id="bank">{view.bank}</strong></div>
+        </div>
+        <div className="tools">
+          <button id="sound" aria-pressed={sound} onClick={() => { soundRef.current = !sound; setSound(!sound); }}>{sound ? 'Ljud på' : 'Ljud av'}</button>
+          {fullscreenSupported && <button id="fullscreen" aria-pressed={fullscreen} onClick={toggleFullscreen}>{fullscreen ? 'Lämna helskärm' : 'Helskärm'}</button>}
+          <button id="pause" disabled={view.state !== 'running'} onClick={() => action(game => game.togglePause())}>{view.paused ? 'Fortsätt' : 'Pausa'}</button>
+        </div>
         <footer className="game-controls">
-          <div><span className="key">SPACE</span><span>Slå · håll för kraftslag</span></div>
+          <div className="control-hint"><span className="key">SPACE</span><span>Slå · håll för kraftslag</span></div>
+          <div className="record">REKORD <b id="best">{best}</b> MYNT</div>
           <div className="charge"><span>KRAFTSLAG</span><div className="meter"><i id="charge-bar" style={{ width: `${view.charge}%` }} /></div></div>
-          <button id="strike" className="strike" disabled={state !== 'running'} {...input} onClick={event => { if (event.detail === 0) action(game => game.attack()); }}>SLÅ <span aria-hidden="true">✦</span></button>
+          <button id="strike" className="strike" disabled={state !== 'running' || !assetsReady} {...input} onClick={event => { if (event.detail === 0) action(game => game.attack()); }}>SLÅ <span aria-hidden="true">✦</span></button>
         </footer>
       </section>
-      <section className="guide" aria-label="Spelguide">
-        <div><span className="guide-number">01</span><h3>Driv in skatten</h3><p>Träffa bybor, tunnor och vagnar när de är nära. Flera träffar i följd ger bonusmynt.</p></div>
-        <div><span className="guide-number">02</span><h3>Välj dina strider</h3><p>Vakter och vagnar tål mer. Ladda ett kraftslag. Slå inte de lila trollkarlarna!</p></div>
-        <div><span className="guide-number">03</span><h3>Rustad för morgondagen</h3><p>Nå målet och handla vapen, rustning och läkande drycker mellan dagarna.</p></div>
-      </section>
-      <footer className="credits"><span>Ett eget spel inspirerat av The Black Knight.</span><span>DITT REKORD <b id="best">{best}</b> MYNT</span></footer>
     </main>
   );
 }

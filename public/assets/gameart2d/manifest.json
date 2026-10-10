@@ -1,0 +1,191 @@
+{
+  "source": "https://github.com/rudy-digipen/gameart2d",
+  "commit": "9616490045bb9f35918ec1fd154b9847a4531716",
+  "files": [
+    {
+      "file": "knight-idle-1.png",
+      "source": "freeknight/png/Idle (1).png",
+      "sha256": "790a14d8155904c68754d498645a19b90c5513d758ee7edcc3f169274ba9e187"
+    },
+    {
+      "file": "knight-idle-2.png",
+      "source": "freeknight/png/Idle (2).png",
+      "sha256": "fa42990f78b646ec997021cd63234a70ebe0fa25fb999fa1cb2b9c83efa6487f"
+    },
+    {
+      "file": "knight-idle-3.png",
+      "source": "freeknight/png/Idle (3).png",
+      "sha256": "40254750d6b3e8c850ca44f510c82150bb4315b16f36b4b58f3aee176c784022"
+    },
+    {
+      "file": "knight-idle-4.png",
+      "source": "freeknight/png/Idle (4).png",
+      "sha256": "87ab2779c22b84d3332dad3d97bfdcd7ca0e8de2574ab3f806c63cb916793db6"
+    },
+    {
+      "file": "knight-idle-5.png",
+      "source": "freeknight/png/Idle (5).png",
+      "sha256": "64e1f69e533717b9d7f50f28ebfea747d4b1670f2d5bbb66b05a34daf3fe647b"
+    },
+    {
+      "file": "knight-idle-6.png",
+      "source": "freeknight/png/Idle (6).png",
+      "sha256": "f59e22c398a6a30ed1c52fb99abef2cb9e5ca053c1fe1bbffa4e3e77e65ffe3f"
+    },
+    {
+      "file": "knight-idle-7.png",
+      "source": "freeknight/png/Idle (7).png",
+      "sha256": "745ee0788d6e5346ccf843fb375d6bedabdeaf2fc6a7f012a39ac8b281cd2047"
+    },
+    {
+      "file": "knight-idle-8.png",
+      "source": "freeknight/png/Idle (8).png",
+      "sha256": "38b1fac1f31f1b275a4517eb55e21e041eae2c499acb9aae4dcae0a6a84f4331"
+    },
+    {
+      "file": "knight-idle-9.png",
+      "source": "freeknight/png/Idle (9).png",
+      "sha256": "779b2739be938138fef3f138152ceafee51259c10c3bc611cf584af0fcddcd68"
+    },
+    {
+      "file": "knight-idle-10.png",
+      "source": "freeknight/png/Idle (10).png",
+      "sha256": "d6eb42f5d2739b7142b3d20ef9d53ae734ef4f6c025f2fe67ab514b4eafca74f"
+    },
+    {
+      "file": "knight-walk-1.png",
+      "source": "freeknight/png/Walk (1).png",
+      "sha256": "86e56bd6e2a578565ae9820047ebe6a391cbf576a0f61a762a782c8fc753dab1"
+    },
+    {
+      "file": "knight-walk-2.png",
+      "source": "freeknight/png/Walk (2).png",
+      "sha256": "819030ef1f26f0db7bd731d144a9a5e471fb30c232367bd9836c8f24971250ac"
+    },
+    {
+      "file": "knight-walk-3.png",
+      "source": "freeknight/png/Walk (3).png",
+      "sha256": "539c180b7426440711bf0fbb66866a1e0ce783c35c7f5ee828a62b75cb43a9b8"
+    },
+    {
+      "file": "knight-walk-4.png",
+      "source": "freeknight/png/Walk (4).png",
+      "sha256": "fdf74d111822e75c27ef6f8d83e0555d86e1d2f3c8f4f986fdd80b23dcd8781b"
+    },
+    {
+      "file": "knight-walk-5.png",
+      "source": "freeknight/png/Walk (5).png",
+      "sha256": "b5e44f8523bdd7aee0850ce3c3bc5af6ab9bc982488bf8ef68c684733e033fce"
+    },
+    {
+      "file": "knight-walk-6.png",
+      "source": "freeknight/png/Walk (6).png",
+      "sha256": "ee6f0ff818e277d9a623bb165777e8385278905b4d2685f2bc36e6887911b135"
+    },
+    {
+      "file": "knight-walk-7.png",
+      "source": "freeknight/png/Walk (7).png",
+      "sha256": "ad1e7b26593fba6bf2eda6cd6c432d14783b19ae5012480d5a1c639c2ae22b9c"
+    },
+    {
+      "file": "knight-walk-8.png",
+      "source": "freeknight/png/Walk (8).png",
+      "sha256": "84b0669f3bbaa5c5e147576756adf90e213827ecd1a7db45380825a94745e060"
+    },
+    {
+      "file": "knight-walk-9.png",
+      "source": "freeknight/png/Walk (9).png",
+      "sha256": "4c3a56463cf9eb6affcc7bf3b656e8d85cb80a68017ff79b4d78aa21f06c7c53"
+    },
+    {
+      "file": "knight-walk-10.png",
+      "source": "freeknight/png/Walk (10).png",
+      "sha256": "de4ee7452a4edef0bf483f5256c7f4caf007cb5a411ccbeaece9af708dc6a8a4"
+    },
+    {
+      "file": "knight-attack-1.png",
+      "source": "freeknight/png/Attack (1).png",
+      "sha256": "c80b0837fc0ace3bfc19231afd02a4d087cbb04892abfc8ca94e041eb6c009b1"
+    },
+    {
+      "file": "knight-attack-2.png",
+      "source": "freeknight/png/Attack (2).png",
+      "sha256": "821cd0286336a4a28aaebc3c01a11a9d84844d7b7bac5b61289eef5c70c532eb"
+    },
+    {
+      "file": "knight-attack-3.png",
+      "source": "freeknight/png/Attack (3).png",
+      "sha256": "981157b358e31292829fbd56e6ca5ec6e18c65a3cacd3a803e5b79c4017d18a4"
+    },
+    {
+      "file": "knight-attack-4.png",
+      "source": "freeknight/png/Attack (4).png",
+      "sha256": "94c7e835ce7d314d063ada22c5153e78f9db214b70511245166925726b20e0e4"
+    },
+    {
+      "file": "knight-attack-5.png",
+      "source": "freeknight/png/Attack (5).png",
+      "sha256": "16a0542a7e6b126ac6e2536f668666ec2241f41f394ea1da98dd1aad43f321c4"
+    },
+    {
+      "file": "knight-attack-6.png",
+      "source": "freeknight/png/Attack (6).png",
+      "sha256": "a9bc9d9118faa978364413f0addc8ee7d0a51d14b90b16681d1d0181374f8ad4"
+    },
+    {
+      "file": "knight-attack-7.png",
+      "source": "freeknight/png/Attack (7).png",
+      "sha256": "066fb612e16fb82bf1d23f8a63ee5d6f3e908ebb8e28f184f8243a8c2ef7ea7a"
+    },
+    {
+      "file": "knight-attack-8.png",
+      "source": "freeknight/png/Attack (8).png",
+      "sha256": "0d7dc91135629092079e9a1e97f87df8ec082b9ecdeceaa515433f6738a5ffa7"
+    },
+    {
+      "file": "knight-attack-9.png",
+      "source": "freeknight/png/Attack (9).png",
+      "sha256": "edc6d867bb6c2738254d0dbbcbaf4e5e24dfdde4247776f8cf824a99f85762bc"
+    },
+    {
+      "file": "knight-attack-10.png",
+      "source": "freeknight/png/Attack (10).png",
+      "sha256": "851c55590847dfac531566a7ab58aee0c672f0df586e433e3bad7458e9a8d6d6"
+    },
+    {
+      "file": "knight-dead.png",
+      "source": "freeknight/png/Dead (10).png",
+      "sha256": "0b3e960288bf42c93de0afea208586c8c693019e2bdc682d2b9d5005a8d20de9"
+    },
+    {
+      "file": "villager.png",
+      "source": "adventure_girl/png/Idle (1).png",
+      "sha256": "1e3603deddb95cf9096eed842b4a860cd11f928d24dd186d31fb192c22a459dc"
+    },
+    {
+      "file": "worker.png",
+      "source": "redhatfiles/png/Idle (1).png",
+      "sha256": "c636d96d0a144153012bb07e7c865a538457fc71cf33a9db7c1d745d948f1aac"
+    },
+    {
+      "file": "wizard.png",
+      "source": "santasprites/png/Idle (1).png",
+      "sha256": "40f26761f4b8bd4a374acc4a557e6e54d703d38083cdb07581ba090b02020daa"
+    },
+    {
+      "file": "tree.png",
+      "source": "freetileset/png/Object/Tree_2.png",
+      "sha256": "93299d587e777852ad6ef7519b7095df0430558790ef34dd6dea896ff37eafe8"
+    },
+    {
+      "file": "bush.png",
+      "source": "freetileset/png/Object/Bush (1).png",
+      "sha256": "61a9ade8fd6a15b86e841c32bd27c4a3926f02f2a6e72ef01eab85984a5aca20"
+    },
+    {
+      "file": "crate.png",
+      "source": "freetileset/png/Object/Crate.png",
+      "sha256": "331b8fbe2fe4a808329755cbf31d52bab82a2ce9c391d5ab275dfec82faf2ad7"
+    }
+  ]
+}
