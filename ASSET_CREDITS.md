@@ -24,3 +24,14 @@ robe and staff, village buildings, cart, barrels, shadows and comic impact
 lettering are drawn by the game. The PNG sources remain unmodified.
 
 No sprites or other artwork were extracted from The Black Knight.
+
+The player now uses ten separate **The Knight / DragonBones library** parts
+(body, helmet/head, hair, limbs, gauntlet and shield), from the same recorded
+mirror commit and CC0 license. These original PNGs are also listed in the manifest.
+The renderer assembles and animates the parts so the hand can hold a separate
+weapon rather than an embedded sword. Guards still use the original frame sprites.
+
+`public/assets/weapons/` contains six original comic SVG weapon sprites made for
+this game: training sword, iron sword, royal sword, axe, spiked mace and hammer.
+They are dedicated to the public domain under CC0 1.0. Shop cards and the knight's
+hand use the same files, with the grip point at (50, 135) in a 100 × 160 viewBox.

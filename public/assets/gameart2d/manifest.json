@@ -186,6 +186,56 @@
       "file": "crate.png",
       "source": "freetileset/png/Object/Crate.png",
       "sha256": "331b8fbe2fe4a808329755cbf31d52bab82a2ce9c391d5ab275dfec82faf2ad7"
+    },
+    {
+      "file": "part-body.png",
+      "source": "freeknight/dragonbones/library/Body.png",
+      "sha256": "b6fd88f91398488835843b8a1a85b8858eca5807a4d85f113c4a34d45df94558"
+    },
+    {
+      "file": "part-head.png",
+      "source": "freeknight/dragonbones/library/Head.png",
+      "sha256": "7124a5d09a131d630992e235847f469df8ee42ea44601aef22a7539536a3b20b"
+    },
+    {
+      "file": "part-hair.png",
+      "source": "freeknight/dragonbones/library/Hair.png",
+      "sha256": "f2455f032bc46ede37729806b2bf1aebe5b20eb29d6820354be245932b25ebdb"
+    },
+    {
+      "file": "part-upper-arm.png",
+      "source": "freeknight/dragonbones/library/RightHand (1).png",
+      "sha256": "e937a996abfd780433b53eab61592f93b35bf4c08ba3d36a5c5144f7418121cf"
+    },
+    {
+      "file": "part-forearm.png",
+      "source": "freeknight/dragonbones/library/LeftHand (2).png",
+      "sha256": "36ac7babd8c285277a80d859713b13d7563996c6650ddafe43fa069fc6ac2bbb"
+    },
+    {
+      "file": "part-hand.png",
+      "source": "freeknight/dragonbones/library/RightHand (3).png",
+      "sha256": "66068d8be5d3622e07b6132771352767c2a2cd6058920f7c43a66413083b7bf9"
+    },
+    {
+      "file": "part-thigh.png",
+      "source": "freeknight/dragonbones/library/RightFoot (1).png",
+      "sha256": "b23d9b881d2a0d832910952d0851e01f54d89ad5de9f95aa38295b6a7064936a"
+    },
+    {
+      "file": "part-shin.png",
+      "source": "freeknight/dragonbones/library/RightFoot (3).png",
+      "sha256": "24be66b3497790877ef961dea5ac2202df69dea22a0821780285719f00a8400c"
+    },
+    {
+      "file": "part-boot.png",
+      "source": "freeknight/dragonbones/library/RightFoot (2).png",
+      "sha256": "dc2abd7ece3f32326cc23dc945aa15ced759de8080724a56b2ca1728b095e676"
+    },
+    {
+      "file": "part-shield.png",
+      "source": "freeknight/dragonbones/library/Shield.png",
+      "sha256": "5799780f43fea92f75903e43046f1932b014b041780f293dc16be1869314a184"
     }
   ]
 }

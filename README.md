@@ -16,7 +16,10 @@ Se [ASSET_CREDITS.md](ASSET_CREDITS.md) för paket, källor och licens.
 - Undvik att slå lila trollkarlar: deras förbannelser skadar dig.
 - Vakter som passerar oslagna skadar dig också.
 - Varje dag varar 40 sekunder. Nå skattemålet och överlev för att gå vidare.
-- Köp vapen, rustning eller läkande drycker mellan dagarna. Hälsa och
+- Smedens butik visar sex vapensprites med pris, skada och räckvidd.
+  Ett köp utrustar vapnet direkt och riddaren håller samma sprite i handen.
+  Redan köpta vapen kan utrustas gratis; nya köp kräver tillräckligt med mynt.
+- Köp rustning eller läkande drycker mellan dagarna. Hälsa och
   utrustning följer med; skattemålet ökar varje dag.
 - P eller Pausa stoppar spelet. Det pausas även när fönstret tappar fokus.
 - Helskärm-knappen döljer webbläsarens gränssnitt där Fullscreen API stöds.

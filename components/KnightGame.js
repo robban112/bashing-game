@@ -9,7 +9,7 @@ function snapshot(game) {
   return {
     state: game.state, paused: game.paused, day: game.day, collected: game.collected,
     goal: game.goal, health: game.health, time: Math.ceil(game.time), bank: game.bank,
-    total: game.total, weapon: game.weapon, armor: game.armor, charge: Math.min(100, game.charge / .55 * 100),
+    owned: game.ownedWeapons.join(','), total: game.total, weapon: game.weapon, armor: game.armor, charge: Math.min(100, game.charge / .55 * 100),
   };
 }
 
@@ -23,6 +23,7 @@ export default function KnightGame() {
   const [sound, setSound] = useState(false);
   const [best, setBest] = useState(0);
   const [toast, setToast] = useState('');
+  const [purchaseMessage, setPurchaseMessage] = useState('');
   const [assetsReady, setAssetsReady] = useState(false);
   const [assetError, setAssetError] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
@@ -126,6 +127,7 @@ export default function KnightGame() {
   function start() {
     if (assetError) { window.location.reload(); return; }
     if (!assetsReady) return;
+    setPurchaseMessage('');
     action(game => {
       if (game.paused) game.togglePause();
       else if (game.state === 'shop') game.nextDay();
@@ -149,8 +151,8 @@ export default function KnightGame() {
   const input = { onPointerDown: pointerDown, onPointerUp: pointerUp, onPointerCancel: cancelCharge, onLostPointerCapture: cancelCharge };
   const state = view.paused ? 'paused' : view.state;
   const panel = state === 'shop' ? {
-    kicker: 'KUNGEN ÄR NÖJD. FÖR STUNDEN.', title: 'Skatten är indriven.',
-    text: `Du samlade ${view.collected} mynt. Köp utrustning inför dag ${view.day + 1}; nästa skattemål är ${150 + view.day * 65} mynt. Hälsan följer med till nästa dag.`,
+    kicker: 'KUNGEN ÄR NÖJD. FÖR STUNDEN.', title: 'Smedens skattkammare.',
+    text: `Dag ${view.day} klar: ${view.collected} mynt! Nästa skattemål: ${150 + view.day * 65} mynt.`,
     button: 'Nästa dag', note: 'Bättre vapen ger mer skada. Rustning minskar skadan du tar.',
   } : state === 'over' ? {
     kicker: view.health <= 0 ? 'RIDDARNS ARBETSDAG ÄR ÖVER' : 'KUNGEN SAKNAR SINA MYNT',
@@ -165,12 +167,17 @@ export default function KnightGame() {
     text: 'Byn har gömt sina mynt. Du sköter förhandlingen. Samla dagens skatt innan tiden tar slut — men lämna trollkarlarna i fred.',
     button: 'Ut i byn', note: 'Klicka / mellanslag: slå · Håll och släpp: kraftslag',
   };
-  const nextWeapon = WEAPONS[view.weapon + 1];
-  const shop = [
-    { id: 'weapon', name: nextWeapon?.name ?? 'Bästa vapnet', cost: nextWeapon?.cost, enabled: !!nextWeapon },
-    { id: 'armor', name: view.armor < 3 ? `Rustning ${view.armor + 1}` : 'Bästa rustningen', cost: 75, enabled: view.armor < 3 },
-    { id: 'potion', name: 'Läkedryck +40', cost: 35, enabled: view.health < 100 },
+  const owned = view.owned.split(',').map(Number);
+  const supplies = [
+    { id: 'armor', name: `Rustning ${Math.min(3, view.armor + 1)}`, cost: 75, enabled: view.armor < 3, icon: '♜', detail: '−5 skada per nivå', unavailable: 'Fullt uppgraderad' },
+    { id: 'potion', name: 'Läkedryck', cost: 35, enabled: view.health < 100, icon: '♥', detail: '+40 hälsa', unavailable: 'Full hälsa' },
   ];
+  function chooseWeapon(weapon, index) {
+    action(game => {
+      const wasOwned = game.ownedWeapons.includes(index);
+      if (game.buy(weapon.id)) setPurchaseMessage(`${weapon.name} ${wasOwned ? 'utrustat' : 'köpt och utrustat'}!`);
+    });
+  }
 
   return (
     <main ref={rootRef} className="game-root">
@@ -179,18 +186,38 @@ export default function KnightGame() {
           <canvas ref={canvasRef} id="scene" width="960" height="540" tabIndex={0} {...input} aria-label="Sidscrollande spel. Tryck mellanslag eller klicka för att slå. Håll in och släpp för kraftslag. P pausar." />
           <div className="scene-label" aria-hidden="true"><span id="location">{['KORPBYN', 'EKDALEN', 'KUNGSVÄGEN'][(view.day - 1) % 3]}</span></div>
           <div id="overlay" className="overlay" hidden={state === 'running'}>
-            <div id="panel" className="panel">
+            <div id="panel" className={`panel${state === 'shop' ? ' shop-panel' : ''}`}>
               {state === 'ready' && <p className="game-logo">SVARTA RIDD<span>AREN</span></p>}
               <p id="panel-kicker" className="eyebrow">{panel.kicker}</p>
               <h1 id="panel-title">{panel.title}</h1>
               <p id="panel-text">{panel.text}</p>
               {state === 'ready' && <div className="quick-guide"><span>✦ Slå nära</span><span>◈ Samla mynt</span><span>☄ Undvik magi</span></div>}
-              {state === 'shop' && <div id="shop" className="shop">{shop.map(item => (
-                <button key={item.id} disabled={!item.enabled || view.bank < item.cost} onClick={() => action(game => game.buy(item.id))}>
-                  <span className="shop-icon" aria-hidden="true">{item.id === 'weapon' ? '⚔' : item.id === 'armor' ? '♜' : '♥'}</span>
-                  {item.name}<small>{item.enabled ? `${item.cost} mynt` : item.id === 'potion' ? 'Full hälsa' : 'Fullt uppgraderad'}</small>
-                </button>
-              ))}</div>}
+              {state === 'shop' && <div id="shop" className="shop">
+                <div className="shop-wallet"><span>✦ Din myntpung</span><strong>{view.bank} <small>MYNT</small></strong></div>
+                <p className="shop-intro">Välj ditt argument. Köpta vapen utrustas direkt.</p>
+                <div className="weapon-rack">{WEAPONS.map((weapon, index) => {
+                  const equipped = view.weapon === index, hasWeapon = owned.includes(index);
+                  const shortfall = Math.max(0, weapon.cost - view.bank);
+                  return <button key={weapon.id} className={`weapon-card${equipped ? ' equipped' : ''}`} data-weapon={weapon.id}
+                    disabled={equipped || (!hasWeapon && shortfall > 0)} aria-pressed={equipped}
+                    aria-label={`${weapon.name}, ${weapon.cost} mynt, ${equipped ? 'utrustat' : hasWeapon ? 'utrusta' : shortfall ? `saknar ${shortfall} mynt` : 'köp och utrusta'}`}
+                    onClick={() => chooseWeapon(weapon, index)}>
+                    <span className="weapon-status">{equipped ? '✓ UTRUSTAT' : hasWeapon ? 'ÄGS' : 'TILL SALU'}</span>
+                    <span className="weapon-art"><img src={weapon.sprite} alt="" width="100" height="160" /></span>
+                    <strong>{weapon.name}</strong><span className="weapon-motto">{weapon.motto}</span>
+                    <span className="weapon-stats">{weapon.damage} skada · {weapon.reach} räckvidd</span>
+                    <span className="weapon-price">{weapon.cost === 0 ? 'STARTVAPEN' : <>{weapon.cost} <small>MYNT</small></>}</span>
+                    <span className="weapon-action">{equipped ? 'I riddarens hand' : hasWeapon ? 'Utrusta gratis' : shortfall ? `Saknar ${shortfall} mynt` : 'Köp & utrusta →'}</span>
+                  </button>;
+                })}</div>
+                <div className="shop-supplies">{supplies.map(item => <button key={item.id} disabled={!item.enabled || view.bank < item.cost} onClick={() => action(game => {
+                  if (game.buy(item.id)) setPurchaseMessage(`${item.name} köpt!`);
+                })}>
+                  <span className="supply-icon" aria-hidden="true">{item.icon}</span><span><strong>{item.name}</strong><small>{item.enabled ? item.detail : item.unavailable}</small></span>
+                  <b>{item.cost}<small>MYNT</small></b>
+                </button>)}</div>
+                <p className="purchase-message" role="status" aria-live="polite">{purchaseMessage || `Utrustat: ${WEAPONS[view.weapon].name}`}</p>
+              </div>}
               <button id="start" className="primary" onClick={start} disabled={!assetsReady && !assetError}>
                 {assetError ? 'Ladda om' : assetsReady ? panel.button : 'Laddar riddaren…'}<span aria-hidden="true">→</span>
               </button>
@@ -214,6 +241,7 @@ export default function KnightGame() {
         </div>
         <footer className="game-controls">
           <div className="control-hint"><span className="key">SPACE</span><span>Slå · håll för kraftslag</span></div>
+          <div className="equipped-hud"><img src={WEAPONS[view.weapon].sprite} alt="" width="25" height="40" /><span>{WEAPONS[view.weapon].name}</span></div>
           <div className="record">REKORD <b id="best">{best}</b> MYNT</div>
           <div className="charge"><span>KRAFTSLAG</span><div className="meter"><i id="charge-bar" style={{ width: `${view.charge}%` }} /></div></div>
           <button id="strike" className="strike" disabled={state !== 'running' || !assetsReady} {...input} onClick={event => { if (event.detail === 0) action(game => game.attack()); }}>SLÅ <span aria-hidden="true">✦</span></button>

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Game, DAY_LENGTH } from '../lib/game.js';
+import { Game, DAY_LENGTH, WEAPONS } from '../lib/game.js';
 const target = (type = 'villager', hp = 1, gold = 15, x = 60) => ({ type, hp, gold, x, hit: 0, resolved: false });
 function setup() { const game = new Game(() => .1); game.startDay(); game.entities = []; return game; }
 
@@ -60,4 +60,41 @@ test('a full deterministic day is playable and can meet its quota', () => {
     game.update(.1);
   }
   assert.equal(game.state, 'shop'); assert.ok(game.collected >= game.goal);
+});
+
+test('specific weapons can be purchased, equipped for free and retained without duplicate charges', () => {
+  const game = setup();
+  assert.equal(game.buy('axe'), false);
+  game.collected = 500; game.finish();
+  assert.equal(game.buy('unknown'), false);
+  assert.equal(game.buy('axe'), true); assert.equal(game.weapon, 3); assert.equal(game.bank, 320);
+  assert.deepEqual(game.ownedWeapons, [0, 3]);
+  assert.equal(game.buy('hammer'), false); assert.equal(game.weapon, 3); assert.equal(game.bank, 320);
+  assert.equal(game.buy('mace'), true); assert.equal(game.weapon, 4); assert.equal(game.bank, 0);
+  assert.equal(game.buy('axe'), true); assert.equal(game.bank, 0); assert.equal(game.weapon, 3);
+  assert.equal(game.buy('training'), true); assert.equal(game.weapon, 0);
+  assert.equal(game.buy('mace'), true); assert.deepEqual(game.ownedWeapons, [0, 3, 4]);
+  game.nextDay(); assert.equal(game.weapon, 4); assert.deepEqual(game.ownedWeapons, [0, 3, 4]);
+  game.entities = [target('cart', 4, 30, 120), target('cart', 4, 30, 121)];
+  game.attack(); assert.equal(game.entities[0].resolved, true); assert.equal(game.entities[1].hp, 4);
+  assert.equal(game.buy('training'), false); assert.equal(game.weapon, 4);
+  game.reset(); assert.deepEqual(game.ownedWeapons, [0]); assert.equal(game.weapon, 0);
+});
+
+
+test('every catalog purchase applies its own price, damage and reach', () => {
+  for (const [index, weapon] of WEAPONS.entries()) {
+    const game = setup(); game.collected = 600; game.finish();
+    if (weapon.cost) {
+      game.bank = weapon.cost - 1; assert.equal(game.buy(weapon.id), false);
+      assert.equal(game.weapon, 0); assert.equal(game.bank, weapon.cost - 1);
+    }
+    game.bank = weapon.cost; assert.equal(game.buy(weapon.id), true);
+    assert.equal(game.weapon, index); assert.equal(game.bank, 0);
+    assert.equal(game.buy(weapon.id), true); assert.equal(game.bank, 0);
+    game.nextDay();
+    const inside = target('cart', 10, 30, weapon.reach), outside = target('cart', 10, 30, weapon.reach + 1);
+    game.entities = [inside, outside]; game.attack();
+    assert.equal(inside.hp, 10 - weapon.damage); assert.equal(outside.hp, 10);
+  }
 });
